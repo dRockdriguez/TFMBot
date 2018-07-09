@@ -7,6 +7,8 @@ require_once("./latch/Latch.php");
 require_once("./latch/LatchResponse.php");
 require_once("./latch/Error.php");
 
+require_once("./utils/functions.php");
+
 $website = "";
 $botToken = "606239452:AAHsCqUXbro8YZtexdnSGTMosv5VxDaLoG0";
 $webSite = "https://api.telegram.org/bot" . $botToken;
@@ -30,10 +32,48 @@ switch($message) {
 		sendMessage($chatId, $response);
 		break;
 	case '/noticias':
-		getNoticias($chatId);
+		$noticias = getSubscriptions($chatId);
+				
+		sendMessage($chatId, $noticias);
+
 		break;
 	default:
-	break;
+	case '/publico':
+		$r = subscribe($chatId, '1');
+		if($r == "1") {
+			sendMessage($chatId, 'Desubscrito a Público correctamente');	
+		} else{
+			sendMessage($chatId, 'Subscrito a Público correctamente');
+		}
+		break;
+	case '/mundo':
+		$r = subscribe($chatId, '2');
+		if($r == "1") {
+			sendMessage($chatId, 'Desubscrito a El Mundo correctamente');	
+		} else{
+			sendMessage($chatId, 'Subscrito a El Mundo correctamente');
+		}
+		break;
+	case '/pais':
+		$r = subscribe($chatId, '3');
+		if($r == "1") {
+			sendMessage($chatId, 'Desubscrito a El País correctamente');	
+		} else{
+			sendMessage($chatId, 'Subscrito a El País correctamente');
+		}
+		break;
+	case '/abc':
+		$r = subscribe($chatId, '4');
+		if($r == "1") {
+			sendMessage($chatId, 'Desubscrito a ABC correctamente');	
+		} else{
+			sendMessage($chatId, 'Subscrito a ABC correctamente');
+		}
+		break;
+	case '/suscripciones':
+		$lista = getListSubscriptions($chatId);
+		sendMessage($chatId, $lista);
+		break;
 }
 
 function sendMessage($chatId, $response) {
@@ -41,25 +81,6 @@ function sendMessage($chatId, $response) {
 	file_get_contents($url);
 }
 
-function getNoticias($chatId) {
-	include('./simple_html_dom.php');
 
-	$context = stream_context_create(array('http' => array('header' => 'Accept: application/xml')));
-	$url = "http://www.publico.es/rss/espana";
-
-	$xmlString = file_get_contents($url, false, $context);
-	$xml = simplexml_load_string($xmlString, "SimpleXMLElement", LIBXML_NOCDATA);
-	$json = json_encode($xml);
-	
-	$array = json_decode($json, TRUE);
-	$titulos = "<b>Noticias Público</b>";
-	for ($i=0; $i < 9; $i++) { 
-		$titulos = $titulos . "\n\n". $array['channel']['item'][$i]['title'] . "<a href='" .  $array['channel']['item'][$i]['link'] 
-							. "'>+info</a>";
-	}						
-
-	var_dump($titulos);
-	sendMessage($chatId, $titulos);
-}
 
 ?>
