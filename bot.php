@@ -1,13 +1,14 @@
 <?php
-
+/*
 require_once("./latch/LatchAuth.php");
 require_once("./latch/LatchApp.php");
 require_once("./latch/LatchUser.php");
 require_once("./latch/Latch.php");
 require_once("./latch/LatchResponse.php");
-require_once("./latch/Error.php");
+require_once("./latch/Error.php");*/
 
 require_once("./utils/functions.php");
+require_once("./controller/latchController.php");
 
 $website = "";
 $botToken = "606239452:AAHsCqUXbro8YZtexdnSGTMosv5VxDaLoG0";
@@ -26,18 +27,17 @@ $chatType = $update["message"]["chat"]["type"];
 $message = $update["message"]["text"];
 
 
-switch($message) {
+$par = explode(" ", $message);
+
+switch($par[0]) {
 	case '/ayuda':
 		$response = "Tranquilo amiguito, todavía me están construyendo...";
 		sendMessage($chatId, $response);
 		break;
 	case '/noticias':
-		$noticias = getSubscriptions($chatId);
-				
+		$noticias = getSubscriptions($chatId);	
 		sendMessage($chatId, $noticias);
-
 		break;
-	default:
 	case '/publico':
 		$r = subscribe($chatId, '1');
 		if($r == "1") {
@@ -74,6 +74,29 @@ switch($message) {
 		$lista = getListSubscriptions($chatId);
 		sendMessage($chatId, $lista);
 		break;
+	case '/pair':
+		if (count($par) < 2) {
+			sendMessage($chatId, 'Se ha olvidado de enviar el token');	
+		} else {
+			$r = LatchController::doPair($chatId, $par[1]);
+			error_log('se ha pareao ' . $r);
+			if($r) {
+				sendMessage($chatId, 'Se ha pareado con éxito');	
+			} else {
+				sendMessage($chatId, 'No se ha podido parear');	
+			}
+		}
+		break;
+	case '/unpair':
+		$r = LatchController::doUnpair($chatId);
+		if($r) {
+			sendMessage($chatId, 'Se ha despareado con éxito');	
+		} else {
+			sendMessage($chatId, 'No se ha podido desparear');	
+		}
+		break;
+	default:
+		sendMessage($chatId, 'El comando aún no se ha implementado');
 }
 
 function sendMessage($chatId, $response) {
