@@ -9,6 +9,7 @@ require_once("./latch/Error.php");*/
 
 require_once("./utils/functions.php");
 require_once("./controller/latchController.php");
+require_once("./controller/latchConfig.php");
 
 $website = "";
 $botToken = "606239452:AAHsCqUXbro8YZtexdnSGTMosv5VxDaLoG0";
@@ -35,44 +36,74 @@ switch($par[0]) {
 		sendMessage($chatId, $response);
 		break;
 	case '/noticias':
-		$noticias = getSubscriptions($chatId);	
-		sendMessage($chatId, $noticias);
+		$latchStatus = LatchController::checkLatchStatus($chatId,  LatchConfig::$noticias);
+		if($latchStatus == 'off') {
+			sendMessage($chatId, 'Latch está cerrado');	
+		} else {
+			$noticias = getSubscriptions($chatId);	
+			sendMessage($chatId, $noticias);	
+		}
 		break;
 	case '/publico':
-		$r = subscribe($chatId, '1');
-		if($r == "1") {
-			sendMessage($chatId, 'Desubscrito a Público correctamente');	
-		} else{
-			sendMessage($chatId, 'Subscrito a Público correctamente');
+		$latchStatus = LatchController::checkLatchStatus($chatId,  LatchConfig::$subscription);
+		if($latchStatus == 'off') {
+			sendMessage($chatId, 'Latch está cerrado');	
+		} else {
+			$r = subscribe($chatId, '1');
+			if($r == "1") {
+				sendMessage($chatId, 'Desubscrito a Público correctamente');	
+			} else{
+				sendMessage($chatId, 'Subscrito a Público correctamente');
+			}
 		}
 		break;
 	case '/mundo':
-		$r = subscribe($chatId, '2');
-		if($r == "1") {
-			sendMessage($chatId, 'Desubscrito a El Mundo correctamente');	
-		} else{
-			sendMessage($chatId, 'Subscrito a El Mundo correctamente');
+		$latchStatus = LatchController::checkLatchStatus($chatId,  LatchConfig::$subscription);
+		if($latchStatus == 'off') {
+			sendMessage($chatId, 'Latch está cerrado');	
+		} else {
+			$r = subscribe($chatId, '2');
+			if($r == "1") {
+				sendMessage($chatId, 'Desubscrito a El Mundo correctamente');	
+			} else{
+				sendMessage($chatId, 'Subscrito a El Mundo correctamente');
+			}
 		}
 		break;
 	case '/pais':
-		$r = subscribe($chatId, '3');
-		if($r == "1") {
-			sendMessage($chatId, 'Desubscrito a El País correctamente');	
-		} else{
-			sendMessage($chatId, 'Subscrito a El País correctamente');
+		$latchStatus = LatchController::checkLatchStatus($chatId,  LatchConfig::$subscription);
+		if($latchStatus == 'off') {
+			sendMessage($chatId, 'Latch está cerrado');	
+		} else {
+			$r = subscribe($chatId, '3');
+			if($r == "1") {
+				sendMessage($chatId, 'Desubscrito a El País correctamente');	
+			} else{
+				sendMessage($chatId, 'Subscrito a El País correctamente');
+			}
 		}
 		break;
 	case '/abc':
-		$r = subscribe($chatId, '4');
-		if($r == "1") {
-			sendMessage($chatId, 'Desubscrito a ABC correctamente');	
-		} else{
-			sendMessage($chatId, 'Subscrito a ABC correctamente');
+		$latchStatus = LatchController::checkLatchStatus($chatId,  LatchConfig::$subscription);
+		if($latchStatus == 'off') {
+			sendMessage($chatId, 'Latch está cerrado');	
+		} else {
+			$r = subscribe($chatId, '4');
+			if($r == "1") {
+				sendMessage($chatId, 'Desubscrito a ABC correctamente');	
+			} else{
+				sendMessage($chatId, 'Subscrito a ABC correctamente');
+			}
 		}
 		break;
 	case '/suscripciones':
-		$lista = getListSubscriptions($chatId);
-		sendMessage($chatId, $lista);
+		$latchStatus = LatchController::checkLatchStatus($chatId,  LatchConfig::$subscription);
+		if($latchStatus == 'off') {
+			sendMessage($chatId, 'Latch está cerrado');	
+		} else {
+			$lista = getListSubscriptions($chatId);
+			sendMessage($chatId, $lista);
+		}
 		break;
 	case '/pair':
 		if (count($par) < 2) {
@@ -103,6 +134,7 @@ function sendMessage($chatId, $response) {
 	$url = $GLOBALS[webSite] . "/sendMessage?chat_id=" . $chatId . "&parse_mode=HTML&text=" . urlencode($response);
 	file_get_contents($url);
 }
+
 
 
 

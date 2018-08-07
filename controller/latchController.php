@@ -61,5 +61,21 @@ class LatchController {
 	public static function checkOtp() {
 
 	}
+
+	public static function checkLatchStatus($chatId, $operationId) {
+		$accountId = getAccountId($chatId);
+		error_log('latchstatus accountid' . $accountId);
+		if ($accountId != null && $accountId != '') {
+			$api = new Latch(LatchConfig::$appId, LatchConfig::$secret);
+			$status = $api->operationStatus($accountId, $operationId);
+			if (!empty($status) && $status->getData() != null) {
+				$operations = $status->getData()->operations;
+				$operation = $operations->{$operationId};
+				return $operation->status;
+			}
+		} else {
+			return 'on';
+		}
+	}
 }
 ?>
