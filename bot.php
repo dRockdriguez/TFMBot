@@ -1,11 +1,4 @@
 <?php
-/*
-require_once("./latch/LatchAuth.php");
-require_once("./latch/LatchApp.php");
-require_once("./latch/LatchUser.php");
-require_once("./latch/Latch.php");
-require_once("./latch/LatchResponse.php");
-require_once("./latch/Error.php");*/
 
 require_once("./utils/functions.php");
 require_once("./controller/latchController.php");
@@ -134,8 +127,5 @@ function sendMessage($chatId, $response) {
 	$url = $GLOBALS[webSite] . "/sendMessage?chat_id=" . $chatId . "&parse_mode=HTML&text=" . urlencode($response);
 	file_get_contents($url);
 }
-
-
-
 
 ?>
